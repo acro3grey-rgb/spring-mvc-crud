@@ -5,10 +5,13 @@ import com.serg.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -17,38 +20,38 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public String showAllUsers(ModelMap model) {
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("newUser", new User());
         return "users";
     }
 
-    @PostMapping("/users/add")
-    public String addUser(@RequestParam("name") String name,
-                          @RequestParam("surname") String surname,
-                          @RequestParam("email") String email) {
-        userService.addUser(new User(name, surname, email));
+    @PostMapping
+    public String addUser(@ModelAttribute("newUser") User user) {
+        userService.addUser(user);
         return "redirect:/users";
     }
 
-    @PostMapping("/users/delete")
-    public String deleteUser(@RequestParam("id") Long id) {
+    @PostMapping("/{id}/delete")
+    public String deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
         return "redirect:/users";
     }
 
-    @GetMapping("/users/edit")
-    public String editUser(@RequestParam("id") Long id, ModelMap model) {
-        model.addAttribute("user", userService.getUserById(id));
+    @GetMapping("/{id}/edit")
+    public String editUser(@PathVariable("id") Long id, ModelMap model) {
+        User user = userService.getUserById(id);
+        if (user == null) {
+            return "redirect:/users";
+        }
+        model.addAttribute("user", user);
         return "edit-user";
     }
 
-    @PostMapping("/users/update")
-    public String updateUser(@RequestParam("id") Long id,
-                             @RequestParam("name") String name,
-                             @RequestParam("surname") String surname,
-                             @RequestParam("email") String email) {
-        User user = new User(name, surname, email);
+    @PostMapping("/{id}")
+    public String updateUser(@PathVariable("id") Long id,
+                             @ModelAttribute("user") User user) {
         user.setId(id);
         userService.updateUser(user);
         return "redirect:/users";

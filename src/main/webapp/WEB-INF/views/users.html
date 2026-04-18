@@ -24,14 +24,12 @@
         <td th:text="${user.surname}"></td>
         <td th:text="${user.email}"></td>
         <td>
-            <form th:action="@{/users/edit}" method="get">
-                <input type="hidden" name="id" th:value="${user.id}">
+            <form th:action="@{/users/{id}/edit(id=${user.id})}" method="get">
                 <button type="submit">Edit</button>
             </form>
         </td>
         <td>
-            <form th:action="@{/users/delete}" method="post">
-                <input type="hidden" name="id" th:value="${user.id}">
+            <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post">
                 <button type="submit">Delete</button>
             </form>
         </td>
@@ -40,10 +38,10 @@
 
 <h2>Add user</h2>
 
-<form th:action="@{/users/add}" method="post">
-    <input type="text" name="name" placeholder="Name" required>
-    <input type="text" name="surname" placeholder="Surname" required>
-    <input type="email" name="email" placeholder="Email" required>
+<form th:action="@{/users}" th:object="${newUser}" method="post">
+    <input type="text" th:field="*{name}" placeholder="Name" required>
+    <input type="text" th:field="*{surname}" placeholder="Surname" required>
+    <input type="email" th:field="*{email}" placeholder="Email" required>
     <button type="submit">Add</button>
 </form>
 
